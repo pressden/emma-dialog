@@ -15,13 +15,15 @@ Text Domain: emma_dialog
  */
 function emma_dialog_enqueue_frontend() {
   $dialog_library_js = plugin_dir_url( __FILE__ ) . 'vendor/dialog-polyfill/dialog-polyfill.js';
-  $dialog_frontend_js = plugin_dir_url( __FILE__ ) . 'js/dialog-frontend.js';;
-  $dialog_version = '0.5.2';
+  $dialog_library_version = '0.5.2';
+
+  $dialog_frontend_js = plugin_dir_url( __FILE__ ) . 'js/dialog-frontend.js';
+  $dialog_frontend_version = '1.0.0';
 
   global $post;
   if( has_block( 'emma/dialog', $post ) ) {
-    wp_enqueue_script( 'dialog-library', $dialog_library_js, [], $dialog_version, true );
-    wp_enqueue_script( 'dialog-frontend', $dialog_frontend_js, ['dialog-library'], $dialog_version, true );
+    wp_enqueue_script( 'dialog-library', $dialog_library_js, [], $dialog_library_version, true );
+    wp_enqueue_script( 'dialog-frontend', $dialog_frontend_js, ['dialog-library'], $dialog_editor_version, true );
   }
 }
 add_action( 'wp_enqueue_scripts', 'emma_dialog_enqueue_frontend' );
@@ -31,8 +33,8 @@ add_action( 'wp_enqueue_scripts', 'emma_dialog_enqueue_frontend' );
  */
 function emma_dialog_enqueue_editor() {
   $dialog_editor_js = plugin_dir_url( __FILE__ ) . 'js/dialog-editor.js';
-  $dialog_block_version = '1.0.0';
+  $dialog_editor_version = '1.0.0';
 
-  wp_enqueue_script( 'dialog-editor', $dialog_editor_js, ['wp-blocks','wp-editor'], $dialog_block_version, true );
+  wp_enqueue_script( 'dialog-editor', $dialog_editor_js, ['wp-blocks','wp-editor'], $dialog_editor_version, true );
 }
 add_action( 'enqueue_block_editor_assets', 'emma_dialog_enqueue_editor' );
