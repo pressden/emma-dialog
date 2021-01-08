@@ -15,6 +15,7 @@ Text Domain: emma_dialog
  */
 function emma_dialog_enqueue_frontend() {
   $dialog_library_js = plugin_dir_url( __FILE__ ) . 'vendor/dialog-polyfill/dialog-polyfill.js';
+  $dialog_library_css = plugin_dir_url( __FILE__ ) . 'vendor/dialog-polyfill/dialog-polyfill.css';
   $dialog_library_version = '0.5.2';
 
   $dialog_frontend_js = plugin_dir_url( __FILE__ ) . 'js/dialog-frontend.js';
@@ -23,6 +24,8 @@ function emma_dialog_enqueue_frontend() {
   global $post;
   if( has_block( 'emma/dialog', $post ) ) {
     wp_enqueue_script( 'dialog-library', $dialog_library_js, [], $dialog_library_version, true );
+    wp_enqueue_style( 'dialog-library', $dialog_library_css, [], $dialog_library_version );
+    
     wp_enqueue_script( 'dialog-frontend', $dialog_frontend_js, ['dialog-library'], $dialog_editor_version, true );
   }
 }
