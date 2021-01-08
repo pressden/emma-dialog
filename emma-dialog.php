@@ -16,7 +16,7 @@ Text Domain: emma_dialog
 function emma_dialog_enqueue_frontend() {
   $dialog_library_js = plugin_dir_url( __FILE__ ) . 'vendor/dialog-polyfill/dialog-polyfill.js';
   $dialog_frontend_js = plugin_dir_url( __FILE__ ) . 'js/dialog-frontend.js';;
-  $dialog_version = '3.4.1';
+  $dialog_version = '0.5.2';
 
   global $post;
   if( has_block( 'emma/dialog', $post ) ) {
