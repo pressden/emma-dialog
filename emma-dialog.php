@@ -41,3 +41,13 @@ function emma_dialog_enqueue_editor() {
   wp_enqueue_script( 'dialog-editor', $dialog_editor_js, ['wp-blocks','wp-editor'], $dialog_editor_version, true );
 }
 add_action( 'enqueue_block_editor_assets', 'emma_dialog_enqueue_editor' );
+
+/**
+ * Add SCSS to compiler
+ */
+function emma_dialog_compile_theme_css( $import_scss_files ) {
+  $import_scss_files[] = plugin_dir_path(__FILE__) . 'sass/dialog-frontend';
+
+  return $import_scss_files;
+}
+add_filter( 'emma_child_theme_scss', 'emma_dialog_compile_theme_css' );
