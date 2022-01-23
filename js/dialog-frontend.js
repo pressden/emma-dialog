@@ -1,156 +1,183 @@
 ( function() {
-  document.querySelectorAll( '.wp-block-emma-dialog' ).forEach( dialog => {
-    document.body.appendChild( dialog );
-    dialogPolyfill.registerDialog( dialog );
+	document.querySelectorAll( '.wp-block-emma-dialog' ).forEach( dialog => {
+		document.body.appendChild( dialog );
+		dialogPolyfill.registerDialog( dialog );
 
-    var options = JSON.parse( dialog.dataset.options );
+		var options = JSON.parse( dialog.dataset.options );
 
-    // attach dialog open event handlers to links with the appropriate hrefs
-    if( options.openLinkAddress !== '' ) {
-      document.querySelectorAll( "[href='" + options.openLinkAddress + "']" ).forEach( link => {
-        link.addEventListener( 'click', function( event ) {
-          var vw = window.innerWidth;
-          if( ( options.openOn === 'desktop' && vw <= 600 ) || ( options.openOn === 'mobile' && vw > 600 ) ) {
-            return;
-          }
-          event.preventDefault();
-          dialog.showModal();
-          dialog.dataset.opened = true;
-        } );
-      } );
-    }
+		// attach dialog open event handlers to links with the appropriate hrefs
+		if( options.openLinkAddress !== '' ) {
+			document.querySelectorAll( "[href='" + options.openLinkAddress + "']" ).forEach( link => {
+				link.addEventListener( 'click', function( event ) {
+					var vw = window.innerWidth;
 
-    // return if the dialog does not have an automatic open setting
-    if( ! options.openAutomatically ) {
-      return;
-    }
+					if( ( options.openOn === 'desktop' && vw <= 600 ) || ( options.openOn === 'mobile' && vw > 600 ) ) {
+						return;
+					}
 
-    if( localStorage.getItem( options.openLimitID + '-preventautoopen' ) ) {
-      return;
-    }
+					event.preventDefault();
+					dialog.showModal();
+					dialog.dataset.opened = true;
+				} );
+			} );
+		}
 
-    // return if not the correct device
-    var vw = window.innerWidth;
-    if( ( options.openOn === 'desktop' && vw <= 600 ) || ( options.openOn === 'mobile' && vw > 600 ) ) {
-      return;
-    }
+		// return if the dialog does not have an automatic open setting
+		if( ! options.openAutomatically ) {
+			return;
+		}
 
-    // return if not the correct logged-in status
-    var loggedIn = document.querySelector( 'body' ).classList.contains( 'logged-in' );
-    if( ( loggedIn && options.openUsers === 'logged-out' ) || ( !loggedIn && options.openUsers === 'logged-in' ) ) {
-      return;
-    }
+		if( localStorage.getItem( options.openLimitID + '-preventautoopen' ) ) {
+			return;
+		}
 
-    if( options.openLimit ) {
-      options.lastOpenedID = options.openLimitID + '-lastopened';
-      options.openCountID = options.openLimitID + '-opencount';
-      var lastOpened = localStorage.getItem( options.lastOpenedID ) || 0;
-      var openLimitExpiration = options.openLimitExpiration;
+		// return if not the correct device
+		var vw = window.innerWidth;
 
-      //set open count back to zero if it has been long enough since the last open
-      if( openLimitExpiration > 0 && Date.now() - ( openLimitExpiration * 86400 ) > lastOpened ) {
-        localStorage.setItem( options.openCountID, 0 );
-      }
-      options.openCount = localStorage.getItem( options.openCountID ) || 0;
+		if( ( options.openOn === 'desktop' && vw <= 600 ) || ( options.openOn === 'mobile' && vw > 600 ) ) {
+			return;
+		}
 
-      // return if open limit is exceeded
-      if( options.openCount >= options.openLimit ) {
-        return;
-      }
-    }
+		// return if not the correct logged-in status
+		var loggedIn = document.querySelector( 'body' ).classList.contains( 'logged-in' );
 
-    if( options.openAutomatically === 'delay' ) {
-      setTimeout( function() {
-        openDialog( dialog, options );
-      }, options.openDelay * 1000 );
-    }
+		if( ( loggedIn && options.openUsers === 'logged-out' ) || ( !loggedIn && options.openUsers === 'logged-in' ) ) {
+			return;
+		}
 
-    if( options.openAutomatically === 'exit' ) {
-      document.addEventListener( 'mouseout', function( event ) {
-        if (!event.toElement && !event.relatedTarget) {
-          openDialog( dialog, options );
-        }
-      } );
+		if( options.openLimit ) {
+			options.lastOpenedID = options.openLimitID + '-lastopened';
+			options.openCountID = options.openLimitID + '-opencount';
 
-      document.addEventListener( 'touchstart', function() {
-        document.body.classList.add( 'on-touch-device' );
-      }, {
-        passive: true,
-      } );
+			var lastOpened = localStorage.getItem( options.lastOpenedID ) || 0;
+			var openLimitExpiration = options.openLimitExpiration;
 
-      document.addEventListener( 'scroll', function() {
-        if( document.body.classList.contains( 'on-touch-device' ) ){
-          if( my_scroll() < -120 ) {
-            openDialog( dialog, options );
-          }
-        }
-      } );
+			// set open count back to zero if it has been long enough since the last open
+			if( openLimitExpiration > 0 && Date.now() - ( openLimitExpiration * 86400 ) > lastOpened ) {
+				localStorage.setItem( options.openCountID, 0 );
+			}
+			options.openCount = localStorage.getItem( options.openCountID ) || 0;
 
-      var my_scroll = (function(){ //Function that checks the speed of scrolling
-      var last_position, new_position, timer, delta, delay = 50;
-      function clear() {
-          last_position = null;
-          delta = 0;
-      }
+			// return if open limit is exceeded
+			if( options.openCount >= options.openLimit ) {
+				return;
+			}
+		}
 
-      clear();
-      return function(){
-          new_position = window.scrollY;
-          if ( last_position != null ){
-              delta = new_position -  last_position;
-          }
-          last_position = new_position;
-          clearTimeout(timer);
-          timer = setTimeout(clear, delay);
-          return delta;
-      };
-      })();
-    }
-  } );
+		if( options.openAutomatically === 'delay' ) {
+			setTimeout(
+				function() {
+					openDialog( dialog, options );
+				},
+				options.openDelay * 1000
+			);
+		}
 
-  document.querySelectorAll( '.close-dialog' ).forEach( el => {
-    var event = 'click';
-    if( el.tagName.toLowerCase() === 'form' ) { // change close event to submit if it's a form
-      event = 'submit';
-    }
+		if( options.openAutomatically === 'exit' ) {
+			document.addEventListener( 'mouseout', function( event ) {
+				if (!event.toElement && !event.relatedTarget) {
+					openDialog( dialog, options );
+				}
+			} );
 
-    el.addEventListener( event, function( event ) {
-      el.closest( 'dialog' ).close();
-      if( el.getAttribute( 'href' ) === '#' ) {
-        event.preventDefault();
-      }
-    } );
-  } );
+			document.addEventListener(
+				'touchstart',
+				function() {
+					document.body.classList.add( 'on-touch-device' );
+				},
+				{
+					passive: true,
+				}
+			);
 
-  document.querySelectorAll( '.prevent-dialog-auto-open' ).forEach( el => {
-    var event = 'click';
-    if( el.tagName.toLowerCase() === 'form' ) { // change close event to submit if it's a form
-      event = 'submit';
-    }
+			document.addEventListener( 'scroll', function() {
+				if( document.body.classList.contains( 'on-touch-device' ) ) {
+					if( my_scroll() < -120 ) {
+						openDialog( dialog, options );
+					}
+				}
+			} );
 
-    el.addEventListener( event, function( event ) {
-      var dialog = el.closest( 'dialog' );
-      var options = JSON.parse( dialog.dataset.options );
-      preventDialogAutoOpen( options.openLimitID );
-      if( el.getAttribute( 'href' ) === '#' ) {
-        event.preventDefault();
-      }
-    } );
-  } );
+			var my_scroll = ( function() { //Function that checks the speed of scrolling
+				var last_position, new_position, timer, delta, delay = 50;
+
+				function clear() {
+					last_position = null;
+					delta = 0;
+				}
+
+				clear();
+
+				return function() {
+					new_position = window.scrollY;
+
+					if ( last_position != null ) {
+						delta = new_position -  last_position;
+					}
+
+					last_position = new_position;
+					clearTimeout(timer);
+					timer = setTimeout(clear, delay);
+					return delta;
+				};
+			})();
+		}
+	} );
+
+	document.querySelectorAll( '.close-dialog' ).forEach( el => {
+		var event = 'click';
+
+		if( el.tagName.toLowerCase() === 'form' ) { // change close event to submit if it's a form
+			event = 'submit';
+		}
+
+		el.addEventListener(
+			event,
+			function( event ) {
+				el.closest( 'dialog' ).close();
+
+				if( el.getAttribute( 'href' ) === '#' ) {
+					event.preventDefault();
+				}
+			}
+		);
+	} );
+
+	document.querySelectorAll( '.prevent-dialog-auto-open' ).forEach( el => {
+		var event = 'click';
+
+		if( el.tagName.toLowerCase() === 'form' ) { // change close event to submit if it's a form
+			event = 'submit';
+		}
+
+		el.addEventListener(
+			event,
+			function( event ) {
+				var dialog = el.closest( 'dialog' );
+				var options = JSON.parse( dialog.dataset.options );
+
+				preventDialogAutoOpen( options.openLimitID );
+
+				if( el.getAttribute( 'href' ) === '#' ) {
+					event.preventDefault();
+				}
+			}
+		);
+	} );
 } )();
 
 function openDialog( dialog, options ) {
-  if( ! dialog.dataset.opened ) {
-    dialog.showModal();
-    dialog.dataset.opened = true;
+	if( ! dialog.dataset.opened ) {
+		dialog.showModal();
+		dialog.dataset.opened = true;
 
-    if( options.openLimitID ) {
-      localStorage.setItem( options.openCountID, parseInt( options.openCount ) + 1 );
-      localStorage.setItem( options.lastOpenedID, Date.now() );
-    }
-  }
+		if( options.openLimitID ) {
+			localStorage.setItem( options.openCountID, parseInt( options.openCount ) + 1 );
+			localStorage.setItem( options.lastOpenedID, Date.now() );
+		}
+	}
 }
 
 function preventDialogAutoOpen( openLimitID ) {
-  localStorage.setItem( openLimitID + '-preventautoopen', 1 );
+	localStorage.setItem( openLimitID + '-preventautoopen', 1 );
 }
