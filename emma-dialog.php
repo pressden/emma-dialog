@@ -40,7 +40,7 @@ add_action( 'wp_enqueue_scripts', 'emma_dialog_enqueue_frontend' );
 function emma_dialog_enqueue_editor() {
 	$dialog_editor_js = plugin_dir_url( __FILE__ ) . 'js/dialog-editor.js';
 
-	wp_enqueue_script( 'dialog-editor', $dialog_editor_js, ['wp-blocks','wp-editor'], EMMA_DIALOG_VERSION, true );
+	wp_enqueue_script( 'dialog-editor', $dialog_editor_js, ['wp-blocks'], EMMA_DIALOG_VERSION, true );
 }
 add_action( 'enqueue_block_editor_assets', 'emma_dialog_enqueue_editor' );
 
