@@ -1,0 +1,87 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "emma/dialog",
+	"version": "0.1.0",
+	"title": "Emma Dialog",
+	"category": "widgets",
+	"icon": "admin-comments",
+	"description": "A block to create a popup modal/dialog box.",
+	"attributes": {
+		"openOn": {
+			"type": "string",
+			"default": "both"
+		},
+		"openLinkAddress": {
+			"type": "string",
+			"default": ""
+		},
+		"openAutomatically": {
+			"type": "string",
+			"default": "false"
+		},
+		"openDelay": {
+			"type": "number",
+			"default": 5
+		},
+		"openLimit": {
+			"type": "integer",
+			"default": 0
+		},
+		"openLimitId": {
+			"type": "string",
+			"default": null
+		},
+		"openLimitExpiration": {
+			"type": "integer",
+			"default": 0
+		},
+		"openUsers": {
+			"type": "string",
+			"default": "both"
+		}
+	},
+	"supports": {
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"gradients": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": [ "top", "bottom" ],
+			"padding": true,
+			"blockGap": true,
+			"__experimentalDefaultControls": {
+				"padding": true,
+				"blockGap": true
+			}
+		},
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"style": true,
+			"width": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontWeight": true,
+			"__experimentalFontStyle": true,
+			"__experimentalTextTransform": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"__experimentalLayout": { "default": {"type": "constrained" }}
+	},
+	"textdomain": "emma-dialog",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"viewScript": "file:./view.js",
+	"style": "file:./style-index.css"
+}

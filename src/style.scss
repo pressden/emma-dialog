@@ -1,0 +1,62 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+dialog {
+	padding: unset;
+	border: unset;
+	margin-block-start: auto !important;
+	margin-block-end: auto !important;
+}
+
+.wp-block-emma-dialog {
+	flex-direction: column;
+	max-height: calc( 100% - 4rem );
+	padding-top: 2rem;
+	padding-bottom: 2rem;
+	overflow: visible;
+
+	&[open] {
+		display: flex;
+	}
+}
+
+.wp-block-emma-dialog__content {
+	overflow-y: auto;
+	height: 100%;
+
+	> * {
+		width: calc(100% - var(--layout-spacer-x) * 2);
+	}
+}
+
+.wp-block-emma-dialog__close {
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 2rem;
+	width: 2rem;
+	margin: 0.25rem;
+
+	&:before {
+		content: '';
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+		mask-image: url( "../assets/icons/no-alt.svg" );
+		mask-repeat: no-repeat;
+		mask-position: center;
+		mask-origin: content-box;
+		background-color: currentColor;
+	}
+}
+
+dialog::backdrop {
+	background: rgba( 0, 0, 0, 0.25 );
+	backdrop-filter: blur( 4px );
+}
