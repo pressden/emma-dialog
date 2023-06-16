@@ -43,9 +43,11 @@ window.onload = (event) => {
       options.openCountId = options.openLimitId + '-opencount';
       var lastOpened = localStorage.getItem( options.lastOpenedId ) || 0;
       var openLimitExpiration = options.openLimitExpiration;
+			console.log( lastOpened );
+			console.log( Date.now() - ( openLimitExpiration * 86400 ) );
 
       //set open count back to zero if it has been long enough since the last open
-      if( openLimitExpiration > 0 && Date.now() - ( openLimitExpiration * 86400 ) > lastOpened ) {
+      if( openLimitExpiration > 0 && ( Date.now() / 1000 ) - ( openLimitExpiration * 86400 ) > lastOpened ) {
         localStorage.setItem( options.openCountId, 0 );
       }
       options.openCount = localStorage.getItem( options.openCountId ) || 0;
