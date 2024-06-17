@@ -26,7 +26,6 @@ dialog {
 
 .wp-block-emma-dialog__content {
 	overflow-y: auto;
-	height: 100%;
 
 	> * {
 		width: calc(100% - var(--layout-spacer-x) * 2);
