@@ -50,7 +50,6 @@ export default function save( { attributes } ) {
 			options.openLimitExpiration = attributes.openLimitExpiration
 		}
 	}
-	console.log(attributes);
 	return (
 		<dialog { ...blockProps } data-options={ JSON.stringify( options ) }>
 			<div><a href="#" class="wp-block-emma-dialog__close"><span class="screen-reader-text">Close Dialog</span></a></div>
