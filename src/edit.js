@@ -4,6 +4,7 @@
  * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect } from '@wordpress/element';
 
 /**
  * React hook that is used to mark the block wrapper element.
@@ -40,9 +41,12 @@ export default function Edit( {
 			className: 'wp-block-emma-dialog__content',
 	} );
 
-	if( attributes.openLimitId === null ) {
-		setAttributes( { openLimitId: Math.random().toString(36).substring(2, 5) + Math.random().toString(36).substring(2, 5) } );
-	}
+	// Every dialog needs its own tracking ID; generate one when it's missing or cleared.
+	useEffect( () => {
+		if( ! attributes.openLimitId ) {
+			setAttributes( { openLimitId: Math.random().toString(36).substring(2, 5) + Math.random().toString(36).substring(2, 5) } );
+		}
+	}, [ attributes.openLimitId ] );
 
 	function DelayOpenSettings() {
 		if( attributes.openAutomatically == 'delay' ) {
@@ -90,7 +94,7 @@ export default function Edit( {
 					/>
 					<TextControl
 						label="Open Limit ID"
-						help="The ID that will be used to track how many times this dialog box will appear. Defaults to a random string, but can be customized so that multiple dialog boxes will count toward the same limit."
+						help="Tracks how many times this dialog box has appeared. Defaults to a random string; give several dialog boxes the same ID to share one limit. A duplicated dialog keeps the original's ID, so change it if the copy should be tracked separately."
 						value={ attributes.openLimitId }
 						onChange={ ( value ) => 
 							setAttributes( { openLimitId: value } )

@@ -1,6 +1,9 @@
-window.onload = (event) => {
+// addEventListener (not window.onload) so other scripts' load handlers aren't replaced.
+window.addEventListener( 'load', () => {
   document.querySelectorAll( '.wp-block-emma-dialog' ).forEach( dialog => {
     var options = JSON.parse( dialog.dataset.options );
+    // Dialogs saved without an ID would otherwise share 'null-*' storage keys.
+    options.openLimitId = options.openLimitId || dialog.id || 'emma-dialog';
 
     // attach dialog open event handlers to links with the appropriate hrefs
     if( options.openLinkAddress !== '' ) {
@@ -41,16 +44,14 @@ window.onload = (event) => {
     if( options.openLimit ) {
       options.lastOpenedId = options.openLimitId + '-lastopened';
       options.openCountId = options.openLimitId + '-opencount';
-      var lastOpened = localStorage.getItem( options.lastOpenedId ) || 0;
+      var lastOpened = parseInt( localStorage.getItem( options.lastOpenedId ) ) || 0; // milliseconds (Date.now())
       var openLimitExpiration = options.openLimitExpiration;
-			console.log( lastOpened );
-			console.log( Date.now() - ( openLimitExpiration * 86400 ) );
 
-      //set open count back to zero if it has been long enough since the last open
-      if( openLimitExpiration > 0 && ( Date.now() / 1000 ) - ( openLimitExpiration * 86400 ) > lastOpened ) {
+      // set open count back to zero if it has been long enough since the last open (days -> milliseconds)
+      if( openLimitExpiration > 0 && Date.now() - ( openLimitExpiration * 86400000 ) > lastOpened ) {
         localStorage.setItem( options.openCountId, 0 );
       }
-      options.openCount = localStorage.getItem( options.openCountId ) || 0;
+      options.openCount = parseInt( localStorage.getItem( options.openCountId ) ) || 0;
 
       // return if open limit is exceeded
       if( options.openCount >= options.openLimit ) {
@@ -130,21 +131,22 @@ window.onload = (event) => {
     el.addEventListener( event, function( event ) {
       var dialog = el.closest( 'dialog' );
       var options = JSON.parse( dialog.dataset.options );
-      preventDialogAutoOpen( options.openLimitId );
+      preventDialogAutoOpen( options.openLimitId || dialog.id || 'emma-dialog' );
       if( el.getAttribute( 'href' ) === '#' ) {
         event.preventDefault();
       }
     } );
   } );
-}
+} );
 
 function openDialog( dialog, options ) {
   if( ! dialog.dataset.opened ) {
     dialog.showModal();
     dialog.dataset.opened = true;
 
-    if( options.openLimitId ) {
-      localStorage.setItem( options.openCountId, parseInt( options.openCount ) + 1 );
+    // only count opens when a limit is set (otherwise openCountId is undefined)
+    if( options.openLimit ) {
+      localStorage.setItem( options.openCountId, options.openCount + 1 );
       localStorage.setItem( options.lastOpenedId, Date.now() );
     }
   }
